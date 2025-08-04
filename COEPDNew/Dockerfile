@@ -1,33 +1,21 @@
-# ----------------------
-# 1️⃣ Build Stage
-# ----------------------
+# ------------ STAGE 1: Build the application ------------
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-WORKDIR /source
-
-# Copy only the .csproj file (ensure folder exists first)
-COPY COEPD/*.csproj COEPD/
-
-# Restore dependencies
-WORKDIR /source/COEPD
-RUN dotnet restore
-
-# Copy the full source code into the container
-COPY . .
-
-# Publish the application (Release mode)
-RUN dotnet publish -c Release -o /app
-
-# ----------------------
-# 2️⃣ Runtime Stage
-# ----------------------
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app
 
-# Copy published files from host to container
-COPY out/ .
+# Copy project files and restore
+COPY *.csproj ./
+RUN dotnet restore
+
+# Copy the rest of the code
+COPY . ./
+RUN dotnet publish -c Release -o /app/out
+
+# ------------ STAGE 2: Runtime image ------------
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime
+WORKDIR /app
+
+# Copy from build image
+COPY --from=build /app/out ./
 
 EXPOSE 5002
-ENV DOTNET_RUNNING_IN_CONTAINER=true \
-    ASPNETCORE_URLS=http://0.0.0.0:5002
-
-ENTRYPOINT ["dotnet", "COEPD.dll"]
+ENTRYPOINT ["dotnet", "COEPDNew.dll"]
