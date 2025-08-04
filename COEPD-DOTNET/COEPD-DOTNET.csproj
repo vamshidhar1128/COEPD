@@ -7,3 +7,6 @@
   </PropertyGroup>
 
 </Project>
+<ItemGroup>
+  <Compile Include="SomeSubfolder/Program.cs" />
+</ItemGroup>
