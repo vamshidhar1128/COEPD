@@ -4,7 +4,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /source
 
-# Copy only the .csproj file (ensure folder exists first)
+# Copy only the .csproj file
 COPY COEPD-DOTNET/*.csproj COEPD-DOTNET/
 
 # Restore dependencies
@@ -14,7 +14,7 @@ RUN dotnet restore
 # Copy the full source code into the container
 COPY . .
 
-# Publish the application (Release mode)
+# Publish the application
 RUN dotnet publish -c Release -o /app
 
 # ----------------------
@@ -23,8 +23,8 @@ RUN dotnet publish -c Release -o /app
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app
 
-# Copy published files from host to container
-COPY out/ .
+# ✅ Copy from build stage
+COPY --from=build /app .
 
 EXPOSE 5002
 ENV DOTNET_RUNNING_IN_CONTAINER=true \
