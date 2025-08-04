@@ -11,8 +11,8 @@ COPY COEPD-DOTNET/*.csproj ./COEPD-DOTNET/
 WORKDIR /src/COEPD-DOTNET
 RUN dotnet restore
 
-# Copy the remaining source code
-COPY COEPD-DOTNET/. ./  # Copy contents of the COEPD-DOTNET folder
+# Copy the full source code of the COEPD-DOTNET project
+COPY COEPD-DOTNET/. .
 
 # Build and publish the application to /app
 RUN dotnet publish -c Release -o /app
